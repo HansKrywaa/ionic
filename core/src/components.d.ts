@@ -1338,9 +1338,9 @@ export namespace Components {
          */
         "handle"?: boolean;
         /**
-          * The initial breakpoint to open the sheet modal. This must be included in the breakpoints passed in or it will not stop at the initial breakpoint after opening. Should be a decimal value between 0 and 1. Defaults to `1`.
+          * The initial breakpoint to open the sheet modal. If not passed, last breakpoint will be used Should be a decimal value between 0 and 1. Defaults to `1`.
          */
-        "initialBreakpoint": number;
+        "initialBreakpoint"?: number;
         /**
           * If `true`, the keyboard will be automatically dismissed when the overlay is presented.
          */
@@ -1375,13 +1375,9 @@ export namespace Components {
          */
         "showBackdrop": boolean;
         /**
-          * If `true`, the modal can be swiped to dismiss. Only applies in iOS mode.
+          * If `true`, the modal can be swiped to dismiss. On default modals this only applies in iOS mode. For sheet type modals this applies to all platforms and is `true` by default
          */
-        "swipeToClose": boolean;
-        /**
-          * The type of modal to present. TODO we could probably remove this and look for the breakpoints
-         */
-        "type": 'default' | 'sheet' | 'card';
+        "swipeToClose"?: boolean;
     }
     interface IonNav {
         /**
@@ -4661,7 +4657,7 @@ declare namespace LocalJSX {
          */
         "handle"?: boolean;
         /**
-          * The initial breakpoint to open the sheet modal. This must be included in the breakpoints passed in or it will not stop at the initial breakpoint after opening. Should be a decimal value between 0 and 1. Defaults to `1`.
+          * The initial breakpoint to open the sheet modal. If not passed, last breakpoint will be used Should be a decimal value between 0 and 1. Defaults to `1`.
          */
         "initialBreakpoint"?: number;
         /**
@@ -4702,13 +4698,9 @@ declare namespace LocalJSX {
          */
         "showBackdrop"?: boolean;
         /**
-          * If `true`, the modal can be swiped to dismiss. Only applies in iOS mode.
+          * If `true`, the modal can be swiped to dismiss. On default modals this only applies in iOS mode. For sheet type modals this applies to all platforms and is `true` by default
          */
         "swipeToClose"?: boolean;
-        /**
-          * The type of modal to present. TODO we could probably remove this and look for the breakpoints
-         */
-        "type"?: 'default' | 'sheet' | 'card';
     }
     interface IonNav {
         /**

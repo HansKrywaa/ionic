@@ -11,6 +11,11 @@ export interface ModalOptions<T extends ComponentRef = ComponentRef> {
   animated?: boolean;
   swipeToClose?: boolean;
 
+  breakpoints?: number[];
+  initialBreakpoint?: number;
+  disableDragOverMaxBreakpoint?: boolean;
+  handle?: boolean;
+
   mode?: Mode;
   keyboardClose?: boolean;
   id?: string;

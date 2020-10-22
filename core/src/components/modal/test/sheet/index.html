@@ -10,12 +10,6 @@
   <script src="../../../../../scripts/testing/scripts.js"></script>
   <script nomodule src="../../../../../dist/ionic/ionic.js"></script>
   <script type="module" src="../../../../../dist/ionic/ionic.esm.js"></script>
-  <style>
-  :root {
-    --ion-safe-area-top: 20px;
-    --ion-safe-area-bottom: 20px;
-  }
-  </style>
 </head>
 
 <body>
@@ -103,9 +97,7 @@
       let extraOptions = {};
       if (type === 'sheet') {
         extraOptions = {
-          type: 'sheet',
-          initialBreakpoint: .75,
-          breakpoints: [0, .5, .75, .9, .25]
+          breakpoints: [.5, .75, .25]
         };
       } else if (type === 'card') {
         extraOptions = {

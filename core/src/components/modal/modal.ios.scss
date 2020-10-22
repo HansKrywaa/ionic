@@ -82,27 +82,6 @@
 // --------------------------------------------------
 
 :host(.modal-sheet) {
-  // align-items: flex-end;
-
-  --backdrop-opacity: 0;
+  --backdrop-opacity: var(--ion-backdrop-opacity, 0.8);
   --border-radius: #{$modal-ios-border-radius};
-}
-
-.modal-handle {
-  position: absolute;
-
-  top: 14px;
-  left: 0;
-  right: 0;
-  margin-left: auto;
-  margin-right: auto;
-
-  width: 36px;
-  height: 5px;
-
-  border-radius: 8px;
-
-  background: rgba(0, 0, 0, 0.23);
-
-  z-index: 2;
 }

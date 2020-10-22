@@ -24,3 +24,11 @@
 
   opacity: .01;
 }
+
+// MD Sheet Modal
+// --------------------------------------------------
+
+:host(.modal-sheet) {
+  --backdrop-opacity: var(--ion-backdrop-opacity, 0.8);
+  --border-radius: #{$modal-md-border-radius};
+}

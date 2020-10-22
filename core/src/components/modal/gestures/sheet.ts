@@ -4,10 +4,18 @@ import { clamp } from '../../../utils/helpers';
 
 // Defaults for the sheet swipe animation
 export const SheetDefaults = {
-  WRAPPER_KEYFRAMES: [
-    { offset: 0, transform: 'translateY(0vh)' },
-    { offset: 1, transform: 'translateY(100vh)' }
-  ]
+  WRAPPER_KEYFRAMES() {
+    return [
+      { offset: 0, transform: 'translateY(0vh)' },
+      { offset: 1, transform: 'translateY(100vh)' }
+    ]
+  },
+  BACKDROP_KEYFRAMES() {
+    return [
+      { offset: 0, opacity: 'var(--backdrop-opacity)' },
+      { offset: 1, opacity: 0 }
+    ]
+  }
 };
 
 // TODO
@@ -16,15 +24,21 @@ let offset = 0;
 export const createSheetGesture = (
   el: HTMLIonModalElement,
   animation: Animation,
+  breakpointChanged: (breakpoint: number) => void,
   onDismiss: () => void
 ) => {
   const contentEl = el.querySelector('ion-content');
   const height = window.innerHeight;
-  let currentBreakpoint = el.initialBreakpoint;
-  const breakpoints = el.breakpoints;
-  const maxBreakpoint = breakpoints && breakpoints[breakpoints.length - 1];
+  let currentBreakpoint = el.initialBreakpoint!;
+  const breakpoints = el.breakpoints!;
+  // lowest breakpoint is at position 1, as position 0 is always 0
+  const minBreakpoint = breakpoints[1];
+  const maxBreakpoint = breakpoints[breakpoints.length - 1];
+  const swipeToClose = el.swipeToClose;
   const wrapperAnimation = animation.childAnimations.find(ani => ani.id === 'wrapperAnimation');
-  const initialWrapperKeyframes = SheetDefaults.WRAPPER_KEYFRAMES;
+  const backdropAnimation = animation.childAnimations.find(ani => ani.id === 'backdropAnimation');
+  const initialWrapperKeyframes = SheetDefaults.WRAPPER_KEYFRAMES();
+  const initialBackdropKeyframes = SheetDefaults.BACKDROP_KEYFRAMES();
 
   const canStart = () => true;
 
@@ -80,11 +94,12 @@ export const createSheetGesture = (
     const threshold = (detail.deltaY + velocity * 1000) / height;
     const diff = currentBreakpoint - threshold;
 
-    let closest = 0;
-    if (breakpoints) {
-      closest = breakpoints.reduce((a, b) => {
+    let closest = breakpoints.reduce((a, b) => {
         return Math.abs(b - diff) < Math.abs(a - diff) ? b : a;
       });
+
+    if (closest === 0 && !swipeToClose) {
+      closest = minBreakpoint;
     }
 
     const shouldRemainOpen = closest !== 0;
@@ -98,6 +113,14 @@ export const createSheetGesture = (
         { offset: 0, transform: `translateY(${offset * 100}vh)` },
         { offset: 1, transform: `translateY(${(1 - closest) * 100}vh)` }
       ]);
+
+      if (backdropAnimation) {
+        backdropAnimation.keyframes([
+          { offset: 0, opacity: `calc(var(--backdrop-opacity) * ${1 - offset})` },
+          { offset: 1, opacity: `calc(var(--backdrop-opacity) * ${closest})` }
+        ]);
+      }
+
       animation.progressStep(0);
     }
 
@@ -110,10 +133,15 @@ export const createSheetGesture = (
         if (shouldRemainOpen) {
           if (wrapperAnimation) {
             wrapperAnimation.keyframes(initialWrapperKeyframes);
+            backdropAnimation?.keyframes(initialBackdropKeyframes);
             animation.progressStart(true, 1 - closest);
             currentBreakpoint = closest;
+            breakpointChanged(currentBreakpoint);
           }
 
+          if (contentEl) {
+            contentEl.scrollY = true;
+          }
           gesture.enable(true);
         }
       }, { oneTimeCallback: true })

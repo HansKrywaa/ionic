@@ -1,22 +1,22 @@
 import { Animation } from '../../../interface';
 import { createAnimation } from '../../../utils/animation/animation';
 import { SwipeToCloseDefaults } from '../gestures/swipe-to-close';
-
 /**
  * iOS Modal Leave Animation
  */
 export const iosLeaveAnimation = (
   baseEl: HTMLElement,
-  presentingEl?: HTMLElement,
+  opts: any,
   duration = 500
 ): Animation => {
-  const initialBreakpoint = (baseEl as HTMLIonModalElement).initialBreakpoint;
-  const lastHeight = initialBreakpoint ? `${100 - (initialBreakpoint * 100)}%` : '0vh';
-  // TODO need to find out what the last breakpoint it stopped on was and move it from there instead
+  const presentingEl = opts.presentingEl as HTMLElement | undefined;
+  const currentBreakpoint = opts.currentBreakpoint as number | undefined;
+  const lastHeight = currentBreakpoint !== undefined ? `${100 - (currentBreakpoint * 100)}%` : '0vh';
+  const backdropMultiplyFactor = currentBreakpoint || 1;
 
   const backdropAnimation = createAnimation()
     .addElement(baseEl.querySelector('ion-backdrop')!)
-    .fromTo('opacity', 'var(--backdrop-opacity)', 0.0);
+    .fromTo('opacity', `calc(var(--backdrop-opacity) *  ${backdropMultiplyFactor})`, 0.0);
 
   const wrapperAnimation = createAnimation()
     .addElement(baseEl.querySelectorAll('.modal-wrapper, .modal-shadow')!)

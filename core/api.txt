@@ -703,10 +703,14 @@ ion-menu-toggle,prop,menu,string | undefined,undefined,false,false
 ion-modal,scoped
 ion-modal,prop,animated,boolean,true,false,false
 ion-modal,prop,backdropDismiss,boolean,true,false,false
+ion-modal,prop,breakpoints,number[] | undefined,undefined,false,false
 ion-modal,prop,component,Function | HTMLElement | null | string,undefined,true,false
 ion-modal,prop,componentProps,undefined | { [key: string]: any; },undefined,false,false
 ion-modal,prop,cssClass,string | string[] | undefined,undefined,false,false
+ion-modal,prop,disableDragOverMaxBreakpoint,boolean | undefined,undefined,false,false
 ion-modal,prop,enterAnimation,((baseEl: any, opts?: any) => Animation) | undefined,undefined,false,false
+ion-modal,prop,handle,boolean | undefined,undefined,false,false
+ion-modal,prop,initialBreakpoint,number | undefined,undefined,false,false
 ion-modal,prop,keyboardClose,boolean,true,false,false
 ion-modal,prop,leaveAnimation,((baseEl: any, opts?: any) => Animation) | undefined,undefined,false,false
 ion-modal,prop,mode,"ios" | "md",undefined,false,false

@@ -12,7 +12,7 @@ import { iosEnterAnimation } from './animations/ios.enter';
 import { iosLeaveAnimation } from './animations/ios.leave';
 import { mdEnterAnimation } from './animations/md.enter';
 import { mdLeaveAnimation } from './animations/md.leave';
-import { createSheetGesture, SheetDefaults } from './gestures/sheet';
+import { SheetDefaults, createSheetGesture } from './gestures/sheet';
 import { createSwipeToCloseGesture } from './gestures/swipe-to-close';
 
 /**
@@ -28,6 +28,7 @@ import { createSwipeToCloseGesture } from './gestures/swipe-to-close';
 })
 export class Modal implements ComponentInterface, OverlayInterface {
   private gesture?: Gesture;
+  private type: 'default' | 'sheet' = 'default';
 
   // Reference to the user's provided modal content
   private usersElement?: HTMLElement;
@@ -37,7 +38,7 @@ export class Modal implements ComponentInterface, OverlayInterface {
   presented = false;
   lastFocus?: HTMLElement;
   animation?: Animation;
-  maxBreakpoint?: number;
+  currentBreakpoint?: number;
 
   @Element() el!: HTMLIonModalElement;
 
@@ -71,11 +72,11 @@ export class Modal implements ComponentInterface, OverlayInterface {
   @Prop() breakpoints?: number[];
 
   /**
-   * The initial breakpoint to open the sheet modal. This must be included in the
-   * breakpoints passed in or it will not stop at the initial breakpoint after opening.
+   * The initial breakpoint to open the sheet modal. If not passed,
+   * last breakpoint will be used
    * Should be a decimal value between 0 and 1. Defaults to `1`.
    */
-  @Prop() initialBreakpoint = 1;
+  @Prop() initialBreakpoint?: number;
 
   /**
    * The horizontal line that displays at the top of a modal. It is `true` by default for
@@ -115,15 +116,10 @@ export class Modal implements ComponentInterface, OverlayInterface {
   @Prop() animated = true;
 
   /**
-   * If `true`, the modal can be swiped to dismiss. Only applies in iOS mode.
+   * If `true`, the modal can be swiped to dismiss. On default modals this only applies in iOS mode.
+   * For sheet type modals this applies to all platforms and is `true` by default
    */
-  @Prop() swipeToClose = false;
-
-  /**
-   * The type of modal to present.
-   * TODO we could probably remove this and look for the breakpoints
-   */
-  @Prop() type: 'default' | 'sheet' | 'card' = 'default';
+  @Prop() swipeToClose?: boolean
 
   /**
    * The element that presented the modal. This is used for card presentation effects
@@ -165,7 +161,19 @@ export class Modal implements ComponentInterface, OverlayInterface {
   }
 
   componentWillLoad() {
-    this.breakpoints = this.breakpoints && this.breakpoints.sort((a, b) => a - b);
+    this.breakpoints = this.breakpoints &&
+      this.breakpoints.filter(value => value <= 1 && value > 0).sort((a, b) => a - b);
+    if (this.breakpoints && this.breakpoints.length > 0) {
+      this.breakpoints = [0, ...this.breakpoints];
+      this.type = 'sheet';
+      if (this.initialBreakpoint === undefined) {
+        this.initialBreakpoint = this.breakpoints![this.breakpoints.length - 1];
+      }
+      if (this.swipeToClose === undefined) {
+        this.swipeToClose = true;
+      }
+      this.currentBreakpoint = this.initialBreakpoint;
+    }
   }
 
   /**
@@ -198,12 +206,14 @@ export class Modal implements ComponentInterface, OverlayInterface {
     }
 
     // After the sheet has been initialized, we need to transform the
-    // modal to th initial breakpoint
+    // modal to the initial breakpoint and the backdrop
     if (this.type === 'sheet') {
-      const wrapper = this.animation!.childAnimations[0];
-      wrapper.keyframes(SheetDefaults.WRAPPER_KEYFRAMES);
+      const wrapper = this.animation!.childAnimations.find(ani => ani.id === 'wrapperAnimation');
+      const backdrop = this.animation!.childAnimations.find(ani => ani.id === 'backdropAnimation');
+      wrapper!.keyframes(SheetDefaults.WRAPPER_KEYFRAMES());
+      backdrop!.keyframes(SheetDefaults.BACKDROP_KEYFRAMES());
 
-      this.animation!.progressStart(true, 1 - this.initialBreakpoint);
+      this.animation!.progressStart(true, 1 - this.initialBreakpoint!);
     }
   }
 
@@ -241,13 +251,14 @@ export class Modal implements ComponentInterface, OverlayInterface {
   }
 
   private initSheetGesture() {
-    if (getIonMode(this) !== 'ios') { return; }
-
     const ani = this.animation!;
 
     this.gesture = createSheetGesture(
       this.el,
       ani,
+      (breakpoint: number) => {
+        this.currentBreakpoint = breakpoint
+      },
       () => {
         /**
          * While the gesture animation is finishing
@@ -282,7 +293,11 @@ export class Modal implements ComponentInterface, OverlayInterface {
     }
 
     const enteringAnimation = activeAnimations.get(this) || [];
-    const dismissed = await dismiss(this, data, role, 'modalLeave', iosLeaveAnimation, mdLeaveAnimation, this.presentingElement);
+    const leaveOpts = {
+      presentingEl: this.presentingElement,
+      currentBreakpoint: this.currentBreakpoint
+    };
+    const dismissed = await dismiss(this, data, role, 'modalLeave', iosLeaveAnimation, mdLeaveAnimation, leaveOpts);
 
     if (dismissed) {
       await detachComponent(this.delegate, this.usersElement);
@@ -341,7 +356,7 @@ export class Modal implements ComponentInterface, OverlayInterface {
   render() {
     const { handle, type } = this;
 
-    const showHandle = handle || type === 'sheet';
+    const showHandle = handle !== undefined ? handle : type === 'sheet';
 
     const mode = getIonMode(this);
 

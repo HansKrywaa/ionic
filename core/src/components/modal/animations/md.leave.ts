@@ -4,7 +4,14 @@ import { createAnimation } from '../../../utils/animation/animation';
 /**
  * Md Modal Leave Animation
  */
-export const mdLeaveAnimation = (baseEl: HTMLElement): Animation => {
+export const mdLeaveAnimation = (
+  baseEl: HTMLElement,
+  opts: any): Animation => {
+  const isSheetStyle = (baseEl as HTMLIonModalElement).breakpoints!.length > 0;
+  const currentBreakpoint = opts.currentBreakpoint as number | undefined;
+  const lastHeight = currentBreakpoint !== undefined ? `${100 - (currentBreakpoint * 100)}%` : '0vh';
+  const backdropMultiplyFactor = currentBreakpoint || 1;
+
   const baseAnimation = createAnimation();
   const backdropAnimation = createAnimation();
   const wrapperAnimation = createAnimation();
@@ -12,14 +19,21 @@ export const mdLeaveAnimation = (baseEl: HTMLElement): Animation => {
 
   backdropAnimation
     .addElement(baseEl.querySelector('ion-backdrop')!)
-    .fromTo('opacity', 'var(--backdrop-opacity)', 0.0);
+    .fromTo('opacity', `calc(var(--backdrop-opacity) *  ${backdropMultiplyFactor})`, 0.0);
 
-  wrapperAnimation
-    .addElement(wrapperEl)
-    .keyframes([
-      { offset: 0, opacity: 0.99, transform: 'translateY(0px)' },
-      { offset: 1, opacity: 0, transform: 'translateY(40px)' }
-    ]);
+  if (isSheetStyle) {
+    wrapperAnimation
+      .addElement(wrapperEl)
+      .beforeStyles({ 'opacity': 1 })
+      .fromTo('transform', `translateY(${lastHeight})`, 'translateY(100vh)');
+  } else {
+    wrapperAnimation
+      .addElement(wrapperEl)
+      .keyframes([
+        { offset: 0, opacity: 0.99, transform: 'translateY(0px)' },
+        { offset: 1, opacity: 0, transform: 'translateY(40px)' }
+      ]);
+  }
 
   return baseAnimation
     .addElement(baseEl)

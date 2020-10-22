@@ -11,3 +11,6 @@ $modal-inset-box-shadow-color:    rgba(0, 0, 0, .4) !default;
 
 /// @prop - Box shadow of the alert
 $modal-inset-box-shadow:          0 28px 48px $modal-inset-box-shadow-color !default;
+
+/// @prop - Border radius for the modal (sheet style only)
+$modal-md-border-radius:             10px !default;
