@@ -467,6 +467,9 @@
         </ion-toolbar>
       </ion-header>
       <ion-content>
+        <ion-refresher slot="fixed">
+          <ion-refresher-content></ion-refresher-content>
+        </ion-refresher>
         <ion-list>
           ${sortedGroups.map(group => {
             return `<ion-item-divider sticky="true">

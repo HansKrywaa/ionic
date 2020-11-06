@@ -397,6 +397,7 @@ export class Refresher implements ComponentInterface {
     await contentEl.componentOnReady();
 
     this.scrollEl = await contentEl.getScrollElement();
+    console.log(this.scrollEl?.clientHeight);
     this.backgroundContentEl = getElementRoot(contentEl).querySelector('#background-content') as HTMLElement;
 
     if (shouldUseNativeRefresher(this.el, getIonMode(this))) {
