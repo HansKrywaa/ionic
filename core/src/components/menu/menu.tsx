@@ -46,14 +46,18 @@ export class Menu implements ComponentInterface, MenuI {
   @State() isEndSide = false;
 
   /**
-   * The content's id the menu should use.
+   * The `id` of the main content. When using
+   * a router this is typically `ion-router-outlet`.
+   * When not using a router, this is typically
+   * your main view's `ion-content`. This is not the
+   * id of the `ion-content` inside of your `ion-menu`.
    */
-  @Prop({ reflectToAttr: true }) contentId?: string;
+  @Prop({ reflect: true }) contentId?: string;
 
   /**
    * An id for the menu.
    */
-  @Prop({ reflectToAttr: true }) menuId?: string;
+  @Prop({ reflect: true }) menuId?: string;
 
   /**
    * The display type of the menu.
@@ -96,7 +100,7 @@ export class Menu implements ComponentInterface, MenuI {
   /**
    * Which side of the view the menu should be placed.
    */
-  @Prop({ reflectToAttr: true }) side: Side = 'start';
+  @Prop({ reflect: true }) side: Side = 'start';
 
   @Watch('side')
   protected sideChanged() {

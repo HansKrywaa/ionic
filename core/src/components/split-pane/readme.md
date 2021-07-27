@@ -158,17 +158,40 @@ export class SplitPaneExample {
     <ion-router-outlet id="main"></ion-router-outlet>
   </ion-split-pane>
 </template>
+
+<script>
+import { 
+  IonHeader, 
+  IonMenu, 
+  IonRouterOutlet, 
+  IonSplitPane, 
+  IonTitle, 
+  IonToolbar
+} from '@ionic/vue';
+import { defineComponent } from 'vue';
+
+export default defineComponent({
+  components: {
+    IonHeader, 
+    IonMenu, 
+    IonRouterOutlet, 
+    IonSplitPane, 
+    IonTitle, 
+    IonToolbar
+  }
+});
+</script>
 ```
 
 
 
 ## Properties
 
-| Property    | Attribute    | Description                                                                                                                           | Type                  | Default       |
-| ----------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------- | --------------------- | ------------- |
-| `contentId` | `content-id` | The content `id` of the split-pane's main content.                                                                                    | `string \| undefined` | `undefined`   |
-| `disabled`  | `disabled`   | If `true`, the split pane will be hidden.                                                                                             | `boolean`             | `false`       |
-| `when`      | `when`       | When the split-pane should be shown. Can be a CSS media query expression, or a shortcut expression. Can also be a boolean expression. | `boolean \| string`   | `QUERY['lg']` |
+| Property    | Attribute    | Description                                                                                                                                                                                                                            | Type                  | Default       |
+| ----------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------- | ------------- |
+| `contentId` | `content-id` | The `id` of the main content. When using a router this is typically `ion-router-outlet`. When not using a router, this is typically your main view's `ion-content`. This is not the id of the `ion-content` inside of your `ion-menu`. | `string \| undefined` | `undefined`   |
+| `disabled`  | `disabled`   | If `true`, the split pane will be hidden.                                                                                                                                                                                              | `boolean`             | `false`       |
+| `when`      | `when`       | When the split-pane should be shown. Can be a CSS media query expression, or a shortcut expression. Can also be a boolean expression.                                                                                                  | `boolean \| string`   | `QUERY['lg']` |
 
 
 ## Events

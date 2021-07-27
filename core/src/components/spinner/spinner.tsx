@@ -67,12 +67,11 @@ export class Spinner implements ComponentInterface {
 
     return (
       <Host
-        class={{
-          ...createColorClasses(self.color),
+        class={createColorClasses(self.color, {
           [mode]: true,
           [`spinner-${spinnerName}`]: true,
-          'spinner-paused': !!self.paused || config.getBoolean('_testing')
-        }}
+          'spinner-paused': self.paused || config.getBoolean('_testing')
+        })}
         role="progressbar"
         style={spinner.elmDuration ? { animationDuration: duration + 'ms' } : {}}
       >
@@ -105,7 +104,7 @@ const buildLine = (spinner: SpinnerConfig, duration: number, index: number, tota
 
   return (
     <svg viewBox={data.viewBox || '0 0 64 64'} style={data.style}>
-      <line transform="translate(32,32)" y1={data.y1} y2={data.y2}></line>
+      <line transform="translate(32,32)" y1={data.y1} y2={data.y2} />
     </svg>
   );
 };
